@@ -1,13 +1,4 @@
 # YAENAMI ASIC
 
-ここにASICの記述を書く
+ASICに関する情報は[pdf](./YAENAMI.pdf)を参照してください。
 
-## Overview
-
-## Functions
-
-## SPI registers
-
-## Difference among v1, v2, and v3
-
-## Precautions for use
