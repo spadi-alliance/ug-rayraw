@@ -39,7 +39,7 @@ The specification is summarized as follows.
     - KEL 8831E-068-170-F
     - User can select ground position from K-type (KEK) and L-type (LeCroy). Default is K-type, and if you need an L-type RAYRAW, please specify it when ordering.
 - FPGA: AMD Xilinx XC7K-160T-2FFG676C
-- Flash memory: CYPRESS S25FL128SAGMFIR01
+- Flash memory: CYPRESS S25FL128SAGMFIG00
 - Data links: SFP+ (10 Gbps in maximum)
     - Link media depends on the type of SFP modules.
 - Clock synchronization: One MIKUMARI port (SFP)
