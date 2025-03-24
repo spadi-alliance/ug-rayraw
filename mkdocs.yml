@@ -30,6 +30,7 @@ markdown_extensions:
       numbering: true
   - caption:
       numbering: true
+  - footnotes
 
 extra_css:
   - css/custom.css
@@ -49,4 +50,3 @@ nav:
       TRG-ADC-TDC: firmware/trg-adc-tdc/trg-adc-tdc.md
   - Software: software/software.md
   - Practical usage: practical/practical.md
-
