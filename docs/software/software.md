@@ -54,4 +54,100 @@ daq 192.168.10.16  1        10000           500              300
 
 ## rayraw-control
 
-ここにrayraw-controlの使い方を書く
+[GitHub Repository](https://github.com/spadi-alliance/rayraw-control.git)
+
+`rayraw-control`は、RAYRAWボードに搭載されているYAENAMI ASICに設定するレジスタ値を作成するためのプログラムです。
+実際にレジスタ値を反映させるには、`rayraw-soft`が必要になります。
+
+### How to use
+#### インストール
+上記のGitHub Repositoryからgit cloneをしてください。その後、makeするだけで使用できます。
+
+```
+$ git clone https://github.com/spadi-alliance/rayraw-control.git rayraw-control
+$ cd rayraw-control
+$ make
+```
+
+#### レジスタ値の作成
+
+
+レジスタの設定ファイルは、`rayraw-control/setup`内にあります。
+`setup_xxx.txt` (xxxはレジスタ名)の内容を書き換えることで、任意のレジスタの値を変更することができます。<br>
+`setup_xxx.txt`の中には、そのレジスタに設定される値が32ch (RAYRAW 1台)分書かれています。
+チャンネルは0 originになっており、
+
+- 0 - 7 ch: YAENAMI ASIC-0
+- 8 - 15 ch: YAENAMI ASIC-1
+- 16 - 23 ch: YAENAMI ASIC-2
+- 24 - 31 ch: YAENAMI ASIC-3
+
+に対応しています。<br>
+レジスタによっては8ch (ASIC 1枚)で共通のものがありますが、そのようなレジスタの場合はASICごとに値が書かれています。
+
+ここでは、例としてYAENAMI ASICのVGAの入力段に接続されるコンデンサの数を設定する`setup_CIN_B_VGA.txt`を挙げます。
+
+```
+# setup of CIN_B_VGA
+# Range: 1 - 4 (2pF step)
+
+# ch : Number of C connected (Default value: 4)
+
+0 : 4
+1 : 4
+2 : 4
+3 : 4
+4 : 4
+5 : 4
+6 : 4
+7 : 4
+8 : 4
+9 : 4
+10 : 4
+11 : 4
+12 : 4
+13 : 4
+14 : 4
+15 : 4
+16 : 4
+17 : 4
+18 : 4
+19 : 4
+20 : 4
+21 : 4
+22 : 4
+23 : 4
+24 : 4
+25 : 4
+26 : 4
+27 : 4
+28 : 4
+29 : 4
+30 : 4
+31 : 4
+```
+
+**`setup_xxx.txt`の中身は自由に書き換え可能ですが、ファイル名は変更しないください。エラーになります。**<br>
+`rayraw-control`のV1.0は、RAYRAWの性能評価を行う際に作成されたプログラムであり、複数台のボードに対するレジスタ値を一度に作成する機能は現段階では有していません。
+複数の設定ファイルが必要になる場合は、以下のような使い方を推奨します。
+
+- `setup_xxx_board1.txt`, `setup_xxx_board2.txt`の様にボードごとに設定ファイルを作成し、`setup_xxx_txt`として該当のファイルにシンボリックリンクを貼る
+- `setup_board1/`, `setup_board2/`の様にボードごとにディレクトリを作成し、`setup/`として該当のディレクトリにシンボリックリンクを貼る
+
+書き換えが完了したら、その設定値を反映させたレジスタ値を作成します。
+
+`rayraw-control/bin`の中にある`rayraw-control`を実行してください。引数は必要ありません。
+`rayraw-control/RegisterValue/`の中に以下のような12個[^1]のテキストファイルが生成されていればOKです。
+正常に生成されたことを確認するために、`ls -l`等でファイルの生成時間をチェックすることを推奨します。
+```
+$ cd rayraw-control
+$ ./bin/rayraw-control
+$ ls RegisterValue/
+YAENAMI_1-1.txt  YAENAMI_1-3.txt  YAENAMI_2-2.txt  YAENAMI_3-1.txt  YAENAMI_3-3.txt  YAENAMI_4-2.txt
+YAENAMI_1-2.txt  YAENAMI_2-1.txt  YAENAMI_2-3.txt  YAENAMI_3-2.txt  YAENAMI_4-1.txt  YAENAMI_4-3.txt
+```
+
+[^1]: YAENAMIにはレジスタを設定する際にリセットシーケンスが必要なレジスタがあるため、1台あたり3つ、計12個のレジスタファイルが生成されるようになっています。
+
+生成したレジスタファイルをYAENAMIに送るには、`rayraw-soft`に用意されている`YaenamiControl/set_asic_register`を使用します。
+使い方については、[rayraw-soft](#rayraw-soft)をご覧ください。
