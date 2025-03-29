@@ -1,5 +1,7 @@
 # Triggered-type ADC Multi-Hit TDC
 
+ファームウェアは[Github](https://github.com/spadi-alliance/RAYRAW-FW)よりダウンロードしてください。
+
 ## Multi-Hit TDC (MTDC)
 
 ### Outline
@@ -29,7 +31,6 @@ MTDCブロックの構造は[下図](#RAYRAW-MTDC)に示す通りである。
 
 <!-- TDC formware is implemented so that it can record both leading edge and trailing edge of all the discrimination output of ASIC channels (32 in total). MTDC is designed to record all TDC value within time window, so this is called **Multi-Hit TDC**. Also, we adopted **Multi-phase Clock TDC** to record time finer.
 -->
-
 
 - FirstFDCEs: Discri入力を4つの異なる位相 (0°,90°,180°, 270°) を持つ300 MHzのクロック (4相クロック) でラッチする。これは後段でのメタステーブル状態を回避するための措置である。
 - FineCounter: 前段の4つの出力を各々対応する4相クロックで再度ラッチした後、クロックドメインを統一するため位相0°で4つの入力をラッチする。位相0°と位相270°のクロックは立ち上がり時刻の差が0.833 nsしかなくFPGAの配線遅延の影響を受けるため、最初位相270°のクロックでラッチしたデータは他の位相のクロックでラッチしたデータと比べて1クロック遅れて後段に届く。そこで、これらのラッチされたデータのうち、初段において位相0°,90°,180°のクロックでラッチされていたデータを1クロックだけ遅らせる。
@@ -92,7 +93,6 @@ ADCBlockの構造を[下図](#RAYRAW-ADC)に示す。
 
 ![RAYRAW-ADC](rayraw-adc.png "ADC structure (AdcBlock.vhd)"){: #RAYRAW-ADC width="100%"}
 
-
 各コンポーネントの役割は以下の通り:
 
 - IBUFDS: 差動入力バッファ。FPGA外部からの差動入力信号をシングルエンド信号にしてFPGA内に出力。
@@ -115,6 +115,7 @@ ISERDESの出力フレーム信号が安定して（16回連続で）0x300に一
 ```
 ADC = magic word (4-bits) & adc_ch (5-bits) & "00" & coarse_counter (11-bits) & ADC (10-bits)
 ```
+
 ADCのmagic wordは`X"a"`である。
 
 ### Note: ISERDES
@@ -131,10 +132,8 @@ ADCのmagic wordは`X"a"`である。
 The structure of the ADC block is shown in the [figure](#RAYRAW-ADC).
 Each YAENAMI ASIC sends (serial) ADC digital output (8-bits), frame clock, data clock to the FPGA.
 These inputs are labeled "DATA[31:0]", "DFRAME[3:0]", "DCLK[3:0]" in the figure, respectively.
-These serial inputs are read out in the RayrawAdcRO block so that they are synchronized with the system clock. The data is continuously read out from ADC and the 
+These serial inputs are read out in the RayrawAdcRO block so that they are synchronized with the system clock. The data is continuously read out from ADC and the
 -->
-
-
 
 ## TRM
 
@@ -142,6 +141,7 @@ These serial inputs are read out in the RayrawAdcRO block so that they are synch
 デフォルトの設定では、TRMのSelectTrigger[0]を"1"にし、DCTのDaqGateを"1"にした状態で、ExtL1(NIMIN1)にHの信号を送ることでデータを取得することができる。
 
 ### BUSYとなるタイミング
+
 BUSY信号(module busy)を内部で作って、NIMOUTに出力できるようになっている。
 ただしNIMINにBUSYとして入力させてもFirmware内では使われていないので、Triggerを出すNIMモジュールなどにVeto信号として用いることを推奨する。
 BUSY信号は以下の信号のORとなっている。
@@ -151,4 +151,3 @@ BUSY信号は以下の信号のORとなっている。
 |Self Busy|200 ns|L1 triggerを検出した瞬間から固定長でアサート。|
 |Sequence Busy||ADC、TDCのBufferやFIFOがFullになるとアサートされます。また、Common Stopを発行してから設定したTime Window分のRing Buffer内のデータ読み出しが終わるまでアサートされます。|
 |FIFO Busy||使われていない。|
-
