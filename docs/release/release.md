@@ -1,11 +1,8 @@
 # Release notes
 
-## Jun. 4, 2024
+## Jun. 24, 2024
 
 ### New
 
-- hogehoge
-    - CIRASAME Skeleton v2.0
-    - CIRASAME-StrLRTDC v2.5
-
-
+- Release v1.3
+    - RAYRAW triggered ADC-TDC v1.3
