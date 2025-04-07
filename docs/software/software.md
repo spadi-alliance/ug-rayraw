@@ -52,12 +52,49 @@ daq 192.168.10.16  1        10000           500              300
 サーチ窓値のLSB精度をA nsとすると、上記例ではコモンストップ信号からみて`300*A - 500*A`秒過去のデータが取得できます。
 
 
+#### YaenamiControl/set\_asic\_register
+
+YAENAMI ASICにレジスタ値を送信するためのプログラムです。レジスタ値は後述の`rayraw-control`で作成します。
+このプログラムには、InitializeとNormalの2つのモードがあります。
+
+
+- Initialize<br>
+ADCのキャリブレーションを行うとともに、ユーザーが設定したい任意のレジスタを送信するモードです。
+YAENAMI ASICは、電源投入後にADCのキャリブレーションを行う必要があります。**RAYRAWへの電源投入後に、必ず実行してください。**
+ADCキャリブレーションの詳細については、[YAENAMI ASICのページ](../asic/yaenami.md)を参照してください。
+
+- Normal<br>
+ユーザーが設定したい任意のレジスタ値をYAENAMI ASICに送信するモードです。
+`Initialize`モードでの実行後は、電源を切らない限り`Normal`モードのみの使用で問題ありません。
+
+
+##### How to use
+便利のために、`rayraw-soft/install/YaenamiControl/`内に`rayraw-control/RegisterValue`へのシンボリックリンクを作成しておくことを推奨します。
+以下の実行例は、シンボリックリンクが`RegisterValue`という名前で作成されている前提です。
+
+```shell
+$ cd /path/to/rayraw-soft/install/YaenamiControl/
+$ ls -l
+drwxr-xr-x 2 hoge fuga 4.0K Apr  1 00:00 bin
+drwxr-xr-x 2 hoge fuga 4.0K Apr  1 00:00 include
+drwxr-xr-x 2 hoge fuga   59 Apr  1 00:00 RegisterValue -> /path/to/rayraw-control/RegisterValue/
+
+                           [IP]           [Register file path]  [Mode]
+$ ./bin/set_asic_register  192.168.10.16  RegisterValue         initialize
+```
+
+この例では、192.168.10.16(SiTCPのデフォルトIP)に対して、ADCキャリブレーションを含むレジスタの送信を行っています。
+引数が足りない場合はUsageが出るようになっているので、引数を忘れてしまったときなどは適宜利用してください。
+
+
+
 ## rayraw-control
 
 [GitHub Repository](https://github.com/spadi-alliance/rayraw-control.git)
 
 `rayraw-control`は、RAYRAWボードに搭載されているYAENAMI ASICに設定するレジスタ値を作成するためのプログラムです。
 実際にレジスタ値を反映させるには、`rayraw-soft`が必要になります。
+なお、2025年4月1日現在、`rayraw-control`はYAENAMI ASIC v0のレジスタにのみ対応しています。
 
 ### How to use
 #### インストール
@@ -147,7 +184,7 @@ YAENAMI_1-1.txt  YAENAMI_1-3.txt  YAENAMI_2-2.txt  YAENAMI_3-1.txt  YAENAMI_3-3.
 YAENAMI_1-2.txt  YAENAMI_2-1.txt  YAENAMI_2-3.txt  YAENAMI_3-2.txt  YAENAMI_4-1.txt  YAENAMI_4-3.txt
 ```
 
-[^1]: YAENAMIにはレジスタを設定する際にリセットシーケンスが必要なレジスタがあるため、1台あたり3つ、計12個のレジスタファイルが生成されるようになっています。
+[^1]: YAENAMI ASICは電源投入後にADCのキャリブレーションが必要であり、その際にのみ使用するレジスタが存在します。そのため、1台あたり3つ、計12個のレジスタファイルが生成されるようになっています。
 
 生成したレジスタファイルをYAENAMIに送るには、`rayraw-soft`に用意されている`YaenamiControl/set_asic_register`を使用します。
 使い方については、[rayraw-soft](#rayraw-soft)をご覧ください。
