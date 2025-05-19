@@ -13,15 +13,18 @@ RAYRAWファームウェアの基本構造を[下図](#RAYRAW-FIRMWARE)に示す
 ![RAYRAW-FIRMWARE](rayraw-firmware-fig-v3.png "RAYRAW firmware structure (toplevel.vhd)"){: #RAYRAW-FIRMWARE width="90%"}
 
 ## Local Bus Modules
+
 AMANEQ同様、RAYRAWファームウェアではLocal Bus経由でアクセスできるモジュールのことをLocal Bus Moduleと呼ぶ。
 これらのうち、BCT、FMP、SDS、TRMについては[HUL User Guide](https://hul-official.gitlab.io/hul-ug/)、C6Cについては[AMANEQ User Guide](https://spadi-alliance.github.io/ug-amaneq/)に説明があるのでここでの説明は省く。
 ただし、TRMに関しては、HULと異なりRMおよびJ0 busが存在しないため、NIMINからの外部トリガー (Ext) に関連する箇所のみが意味を持つ。
 BCTやFMP等の制御はHULと共通であるため、HULのソフトウェアの基本ライブラリ[hul-common-lib](https://github.com/spadi-alliance/hul-common-lib)により行われる一方、YAENAMI Slow Control (YSC) のようなRAYRAW固有の制御はhul-common-lib+[rayraw-soft](https://github.com/spadi-alliance/rayraw-soft)により行われる ([Software](../../software/software.md)の項目も参照) 。
 
 Local Busは32ビットアドレス空間を持ち、その構造は以下のようになっている：
+
 ```
 | module ID (4-bits) | local address (12-bits) | reserved (16-bits) |
 ```
+
 Module IDは各Local Bus Moduleを区別するために用いる。
 Local Addressはモジュール内部のアドレス値であり、レジスタや動作を指す。
 前者の場合、`Reserved`はレジスタに読み書きするデータを指すが、後者の場合、`Reserved`は意味を持たず指定されたアドレスに信号を送ること自体が動作開始の命令となる。
@@ -30,6 +33,7 @@ Local Addressはモジュール内部のアドレス値であり、レジスタ�
 以下の表に出てくるレジスタ名は、実際にファームウェアのコード中で使用されている変数名ではなく、定義ファイル`def*.vhd`中でLocal Addressを格納するために用いられている定数（例えば`kRegName`）から先頭の`k`を除いたもの (`RegName`) である。
 
 ### Module ID
+
 Module IDとLocal Bus Moduleとの対応は以下の通り。
 
 |Module ID|Local Bus Module|
@@ -47,8 +51,8 @@ Module IDとLocal Bus Moduleとの対応は以下の通り。
 |0xE|Local Bus Controller (BCT)|
 |0xF|SiTCP予約領域|
 
-
 ### YAENAMI Slow Control (YSC)
+
 |レジスタ名|Local Address|読み書き|ビット長|機能・備考|
 |:----|:----:|:----:|:----:|:----|
 |WriteData|0x000|W|8|未使用 (`Reserved`の上位8ビットを使用し常に更新される)|
@@ -57,6 +61,7 @@ Module IDとLocal Bus Moduleとの対応は以下の通り。
 |ChipSelect|0x400|W|4|4つのASICのどれにデータを送るかを選択する (複数可)|
 
 ### DAQ Controller (DCT)
+
 |レジスタ名|Local Address|読み書き|ビット長|機能・備考|
 |:----|:----:|:----:|:----:|:----|
 |DaqGate|0x000|W/R|1|DAQ gateのON/OFF (TRMのトリガー出力の有効化/無効化)|
@@ -65,6 +70,7 @@ Module IDとLocal Bus Moduleとの対応は以下の通り。
 DaqGateはマニュアルで有効化/無効化することもできるが、[rayraw-soft](https://github.com/spadi-alliance/rayraw-soft)を用いて取得したいイベント数を指定し、ソフトウェアによって自動的に有効化/無効化することを推奨する ([Software](../../software/software.md)の項目も参照)。
 
 ### TDC
+
 |レジスタ名|Local Address|読み書き|ビット長|機能・備考|
 |:----|:----:|:----:|:----:|:----|
 |EnBlock|0x000|W/R|2|TDCBlock (Leading/Trailing) を有効化する|
@@ -123,6 +129,7 @@ IOM内のデフォルトの入出力の割り当ては次の通りである。
 |extBusy|NIMIN2|
 
 ### ADC
+
 |レジスタ名|Local Address|読み書き|ビット長|機能・備考|
 |:----|:----:|:----:|:----:|:----|
 |OfsPtr|0x000|W/R|11|リングバッファの読み出し位置を示すポインタ|
@@ -135,13 +142,16 @@ IOM内のデフォルトの入出力の割り当ては次の通りである。
 このready信号は`YaenamiAdc.vhd`内で値の設定が行われており、IDELAYにより適切な遅延がかかりISERDESのbitslipが適切な値になったタイミングで1となる ([TRG-ADC-TDC](../trg-adc-tdc/trg-adc-tdc.md/)のADCの項目参照) 。
 
 ### MAX1932 Controller (APD)
+
 |レジスタ名|Local Address|読み書き|ビット長|機能・備考|
 |:----:|:----:|:----:|:----:|:----|
 |Txd|0x000|W|8|MAX1932への8ビットDAC入力|
 |ExecWrite|0x100|W|-|SPI通信(送信)を開始する|
 
 ## Data structure
+
 EVBにより生成される1イベントのデータ構造は以下の通りである (データは全て32ビット長) 。
+
 ```
 Header 1: | 0xFFFF0160 |
 Header 2: | 0xFF0 | 0 | overflow (1-bit) | event size (18-bits) |
@@ -171,9 +181,9 @@ Header 2内の`overflow`は1イベント中にTDCでカウントできる最大�
 
 |スイッチ番号|機能|詳細|
 |:----:|:----:|:---|
-|1||not used|
-|2|SiTCP force default|OFFでSiTCPのデフォルトモードで起動します。電源投入前に設定している必要があります。|
-|3|C6C reset|Jitter Cleaner (CDCE62002)のHardware Resetです。|
+|1|SiTCP force default| 0でSiTCPのデフォルトモードで起動します。電源投入前に設定している必要があります。|
+|2|C6C reset| Jitter Cleaner (CDCE62002)のHardware Resetです。|
+|3||not used|
 |4||not used|
 |5||not used|
 |6||not used|
@@ -185,6 +195,7 @@ Header 2内の`overflow`は1イベント中にTDCでカウントできる最大�
 全てのモジュールをリセットするためのHardware Reset。
 
 ### LED
+
 |番号|備考|
 |:----:|:----|
 |1|点灯中はTCP接続が張られています。|
