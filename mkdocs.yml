@@ -37,6 +37,9 @@ markdown_extensions:
 extra_css:
   - css/custom.css
 
+validation:
+  anchors: warn
+
 nav:
   - Top: index.md
   - Release: release/release.md
