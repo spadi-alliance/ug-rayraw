@@ -7,7 +7,7 @@
 
 
 ## 電源投入まで
-RAYRAWは、20-35VのDC電源を使用します。電源ケーブルのコネクタについては、[Hardware](../harware/hardware.md)のページを参照してください。<br>
+RAYRAWは、20-35VのDC電源を使用します。電源ケーブルのコネクタについては、[Hardware](../hardware/rayraw-v1/rayraw-v1.md)のページを参照してください。<br>
 電源投入前に、FPGAの横にあるDIP SWの1 bit目を1にしてください。
 こうすることで、RAYRAWがForce Defaultモードで起動し、SiTCPのデフォルトIPである`192.168.10.16`を名乗るようになります。<br>
 コネクタを接続後、DC電源の出力をONにしてください。RAYRAW側にはスイッチはありません。
@@ -52,8 +52,8 @@ YAENAMI ASICのレジスタ値の作成および設定については、[softwar
 
 
 ## MPPCへのバイアス電圧の印加
-[Hardwareのページ](../hardware/rayraw-v1/rayraw-v1.md#MPPC-bias)にあるように、RAYRAWはMPPCへバイアス電圧を供給することができます。バイアス電圧はLEMOコネクタから供給されます。
-この電圧の制御には、hul-common-libのインストールが必要です。詳細は[software](../software/software.md#hul-coomon-lib)のページを参照してください。
+[Hardwareのページ](../hardware/rayraw-v1/rayraw-v1.md#mppc-bias)にあるように、RAYRAWはMPPCへバイアス電圧を供給することができます。バイアス電圧はLEMOコネクタから供給されます。
+この電圧の制御には、hul-common-libのインストールが必要です。詳細は[software](../software/software.md#hul-common-lib)のページを参照してください。
 バイアス電圧は、40-70Vの範囲で256段階で調整することができます。
 電源投入後は、40 Vが出力されるようになっています。
 以下に、hul-common-libを用いたMPPCバイアス電圧の設定例を示します。
