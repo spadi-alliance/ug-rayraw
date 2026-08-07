@@ -1,6 +1,8 @@
 site_name: RAYRAW User Guide
 site_description: RAYRAW User Guide
-site_author: 'SPADI-A WG1 YAENAMI-RAYRAW TF'
+site_author: 'SPADI-Alliance WG1 YAENAMI-RAYRAW Task Force'
+copyright: Copyright &copy; SPADI-Alliance
+
 repo_url: https://github.com/spadi-alliance/ug-rayraw
 repo_name: ug-rayraw
 
@@ -35,18 +37,17 @@ markdown_extensions:
 extra_css:
   - css/custom.css
 
-site_name: RAYRAW User Guide
-site_author: YAENAMI-RAYRAW task force members
-copyright: SPADI-A
+validation:
+  anchors: warn
 
 nav:
   - Top: index.md
   - Release: release/release.md
   - ASIC: asic/yaenami.md
   - Hardware:
-      RAYRAW-V1: hardware/rayraw-v1/rayraw-v1.md
+      - RAYRAW-V1: hardware/rayraw-v1/rayraw-v1.md
   - Firmware:
-      Overview: firmware/overview/overview.md
-      TRG-ADC-TDC: firmware/trg-adc-tdc/trg-adc-tdc.md
+      - Overview: firmware/overview/overview.md
+      - TRG-ADC-TDC: firmware/trg-adc-tdc/trg-adc-tdc.md
   - Software: software/software.md
   - Practical usage: practical/practical.md
