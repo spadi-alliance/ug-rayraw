@@ -2,3 +2,4 @@ site/
 pdf/
 ~*
 .venv/
+.DS_store
